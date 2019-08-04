@@ -22,9 +22,9 @@ class CharacterActivity: AppCompatActivity(), CharacterView {
     }
 
     override fun showDetails(details: CharacterDetails) {
-        txt_name.text = String.format("Name: %s", details.essentials.name)
-        txt_birthDate.text = String.format("Birth date: %s", details.essentials.birthDate)
-        txt_gender.text = String.format("Gender: %s", details.essentials.gender)
-        txt_planet.text = String.format("Planet: %s", details.planet)
+        txt_name.text = String.format(getString(R.string.placeholder_name), details.essentials.name)
+        txt_birthDate.text = String.format(getString(R.string.placeholder_birth), details.essentials.birthDate)
+        txt_gender.text = String.format(getString(R.string.placeholder_gender), details.essentials.gender)
+        txt_planet.text = String.format(getString(R.string.placeholder_planet), details.planet)
     }
 }

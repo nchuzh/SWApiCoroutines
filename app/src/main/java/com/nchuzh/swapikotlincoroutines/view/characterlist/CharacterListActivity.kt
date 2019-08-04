@@ -7,17 +7,14 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nchuzh.swapikotlincoroutines.R
-import com.nchuzh.swapikotlincoroutines.domain.repository.CharactersRepository
 import com.nchuzh.swapikotlincoroutines.domain.model.CharacterDetails
 import com.nchuzh.swapikotlincoroutines.domain.model.MovieCharacter
 import com.nchuzh.swapikotlincoroutines.view.character.CharacterActivity
 import com.nchuzh.swapikotlincoroutines.view.showProgressDialog
 import kotlinx.android.synthetic.main.activity_list.*
-import kotlinx.coroutines.*
 
 class CharacterListActivity : AppCompatActivity(), CharacterListView {
-    private val repository: CharactersRepository = CharactersRepository()
-    private var list: List<MovieCharacter>? = null
+    private val presenter = CharacterListPresenter(this)
     private lateinit var listProgress: ProgressDialog
     private lateinit var detailsProgress: ProgressDialog
 
@@ -26,44 +23,59 @@ class CharacterListActivity : AppCompatActivity(), CharacterListView {
         setContentView(R.layout.activity_list)
 
         character_list.layoutManager = LinearLayoutManager(this)
-        character_list.adapter = CharacterAdapter(::openDetails)
+        character_list.adapter = CharacterAdapter(presenter::getDetails)
 
         character_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
                 if (linearLayoutManager!!.itemCount <= linearLayoutManager.findLastVisibleItemPosition() + 2) {
-                    fetch()
+                    presenter.fetch()
                 }
             }
         })
 
-        fetch()
+        presenter.fetch()
     }
 
-    private fun fetch() {
-        listProgress = showProgressDialog(this)
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = repository.getCharacterList()
-            withContext(Dispatchers.Main) {
-                list = response
-                (character_list.adapter as CharacterAdapter).addData(list!!)
-                (character_list.adapter as CharacterAdapter).notifyDataSetChanged()
-                listProgress.dismiss()
-            }
+    override fun openDetails(details: CharacterDetails) {
+        val intent = Intent(this@CharacterListActivity, CharacterActivity::class.java)
+        intent.putExtra(CharacterActivity.KEY, details)
+        startActivity(intent)
+    }
+
+    override fun hideDetailsProgress() {
+        if (::detailsProgress.isInitialized) {
+            detailsProgress.dismiss()
         }
     }
 
-    private fun openDetails(character: MovieCharacter) {
-        detailsProgress = showProgressDialog(this)
-        CoroutineScope(Dispatchers.IO).launch {
-            val planet = repository.getPlanet(character.planetUrl)
-            withContext(Dispatchers.Main) {
-                val intent = Intent(this@CharacterListActivity, CharacterActivity::class.java)
-                intent.putExtra(CharacterActivity.KEY, CharacterDetails(character, planet!!))
-                detailsProgress.dismiss()
-                startActivity(intent)
-            }
+    override fun showDetailsProgress() {
+        if (::detailsProgress.isInitialized) {
+            detailsProgress.show()
+        } else {
+            detailsProgress = showProgressDialog(this)
+        }
+    }
+
+    override fun hideProgress() {
+        if (::listProgress.isInitialized) {
+            listProgress.dismiss()
+        }
+    }
+
+    override fun setList(list: List<MovieCharacter>?) {
+        list?.let {
+            (character_list.adapter as CharacterAdapter).addData(list)
+            (character_list.adapter as CharacterAdapter).notifyDataSetChanged()
+        }
+    }
+
+    override fun showProgress() {
+        if (::listProgress.isInitialized) {
+            listProgress.show()
+        } else {
+            listProgress = showProgressDialog(this)
         }
     }
 }

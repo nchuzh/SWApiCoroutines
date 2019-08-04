@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SwapiKotlinCoroutines</string>
+    <string name="placeholder_name">Name: %s</string>
+    <string name="placeholder_birth">Birth date: %s</string>
+    <string name="placeholder_gender">Gender: %s</string>
+    <string name="placeholder_planet">Planet: %s</string>
+    <string name="loading">Loading...</string>
 </resources>

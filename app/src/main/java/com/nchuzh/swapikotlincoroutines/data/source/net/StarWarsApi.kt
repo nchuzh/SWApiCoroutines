@@ -15,13 +15,15 @@ class StarWarsApi {
             try {
                 response = call.invoke()
             } catch (httpException: HttpException) {
-                Log.d("StarWarsApi","HttpException")
-            } catch (t: Throwable) {
-                Log.d("StarWarsApi","Throwable")
+                Log.d("StarWarsApi", httpException.message())
+                throw httpException
+            } catch (throwable: Throwable) {
+                Log.d("StarWarsApi",throwable.message ?: "something wrong")
+                throw throwable
             }
 
-            if (response?.isSuccessful ?: false)
-                return response!!.body()
+            if (response.isSuccessful)
+                return response.body()
             else
                 return null
         }
