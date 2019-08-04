@@ -10,4 +10,5 @@ interface CharacterListView {
     fun showDetailsProgress()
     fun hideDetailsProgress()
     fun openDetails(details: CharacterDetails)
+    fun showError()
 }

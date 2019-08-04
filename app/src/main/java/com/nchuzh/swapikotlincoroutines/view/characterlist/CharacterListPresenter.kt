@@ -15,10 +15,12 @@ class CharacterListPresenter(private val view: CharacterListView) {
         view.showProgress()
         CoroutineScope(Dispatchers.IO).launch {
             val list = repository.getCharacterList()
-            withContext(Dispatchers.Main) {
-                view.setList(list)
-                view.hideProgress()
-            }
+            list?.let {
+                withContext(Dispatchers.Main) {
+                    view.setList(list)
+                    view.hideProgress()
+                }
+            } ?: view.showError()
         }
     }
 
@@ -26,13 +28,13 @@ class CharacterListPresenter(private val view: CharacterListView) {
         view.showDetailsProgress()
         CoroutineScope(Dispatchers.IO).launch {
             val planet = repository.getPlanet(character.planetUrl)
-            withContext(Dispatchers.Main) {
-                view.hideDetailsProgress()
-                planet?.let {
+            planet?.let {
+                withContext(Dispatchers.Main) {
+                    view.hideDetailsProgress()
                     val details = CharacterDetails(character, planet)
                     view.openDetails(details)
                 }
-            }
+            } ?: view.showError()
         }
     }
 }

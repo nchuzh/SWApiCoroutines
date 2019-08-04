@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nchuzh.swapikotlincoroutines.R
@@ -77,5 +78,9 @@ class CharacterListActivity : AppCompatActivity(), CharacterListView {
         } else {
             listProgress = showProgressDialog(this)
         }
+    }
+
+    override fun showError() {
+        Toast.makeText(this, getString(R.string.error_message), Toast.LENGTH_LONG).show()
     }
 }
