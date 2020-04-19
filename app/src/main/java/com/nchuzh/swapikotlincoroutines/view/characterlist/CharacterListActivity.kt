@@ -1,7 +1,6 @@
 package com.nchuzh.swapikotlincoroutines.view.characterlist
 
 import android.app.ProgressDialog
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -37,6 +36,11 @@ class CharacterListActivity : AppCompatActivity(), CharacterListView {
         })
 
         presenter.fetch()
+    }
+
+    override fun onDestroy() {
+        presenter.cleanUp()
+        super.onDestroy()
     }
 
     override fun openDetails(details: CharacterDetails) {

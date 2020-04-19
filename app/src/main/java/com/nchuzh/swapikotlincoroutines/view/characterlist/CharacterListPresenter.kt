@@ -3,17 +3,15 @@ package com.nchuzh.swapikotlincoroutines.view.characterlist
 import com.nchuzh.swapikotlincoroutines.domain.model.CharacterDetails
 import com.nchuzh.swapikotlincoroutines.domain.model.MovieCharacter
 import com.nchuzh.swapikotlincoroutines.domain.repository.CharactersRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class CharacterListPresenter(private val view: CharacterListView) {
     private val repository: CharactersRepository = CharactersRepository()
+    private val jobs: MutableList<Job> = mutableListOf()
 
     fun fetch() {
         view.showProgress()
-        CoroutineScope(Dispatchers.IO).launch {
+        jobs.add(CoroutineScope(Dispatchers.IO).launch {
             val list = repository.getCharacterList()
             withContext(Dispatchers.Main) {
                 view.hideProgress()
@@ -21,12 +19,12 @@ class CharacterListPresenter(private val view: CharacterListView) {
                     view.setList(list)
                 } ?: view.showError()
             }
-        }
+        })
     }
 
     fun getDetails(character: MovieCharacter) {
         view.showDetailsProgress()
-        CoroutineScope(Dispatchers.IO).launch {
+        jobs.add(CoroutineScope(Dispatchers.IO).launch {
             val planet = repository.getPlanet(character.planetUrl)
             withContext(Dispatchers.Main) {
                 view.hideDetailsProgress()
@@ -35,6 +33,12 @@ class CharacterListPresenter(private val view: CharacterListView) {
                     view.openDetails(details)
                 } ?: view.showError()
             }
+        })
+    }
+
+    fun cleanUp() {
+        for (job in jobs) {
+            job.cancel()
         }
     }
 }
