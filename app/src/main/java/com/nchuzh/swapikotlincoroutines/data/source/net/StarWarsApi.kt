@@ -1,31 +1,29 @@
 package com.nchuzh.swapikotlincoroutines.data.source.net
 
 import android.util.Log
+import com.nchuzh.swapikotlincoroutines.data.model.Fail
+import com.nchuzh.swapikotlincoroutines.data.model.NetworkResult
+import com.nchuzh.swapikotlincoroutines.data.model.Success
 import com.nchuzh.swapikotlincoroutines.network.NetworkClient
-import retrofit2.HttpException
 import retrofit2.Response
 
 class StarWarsApi {
-    val endpoint: StarWarsApiInterface = NetworkClient.retrofit().create(
-        StarWarsApiInterface::class.java)
+    val endpoint: StarWarsApiInterface =
+        NetworkClient.retrofit().create(StarWarsApiInterface::class.java)
 
     companion object {
-        suspend fun <T : Any> call(call: suspend () -> Response<T>): T? {
-            var response: Response<T>? = null
-            try {
+        suspend fun <T : Any> call(call: suspend () -> Response<T>): NetworkResult<T> {
+            val response: Response<T>?
+            return try {
                 response = call.invoke()
-            } catch (httpException: HttpException) {
-                Log.d("StarWarsApi", httpException.message())
-                throw httpException
+                if (response.isSuccessful && response.body() != null)
+                    Success(response.body()!!)
+                else
+                    Fail(Throwable("Server returned null body"))
             } catch (throwable: Throwable) {
-                Log.d("StarWarsApi",throwable.message ?: "something wrong")
-                throw throwable
+                Log.d("StarWarsApi", throwable.message ?: "something wrong")
+                return Fail(throwable)
             }
-
-            if (response.isSuccessful)
-                return response.body()
-            else
-                return null
         }
     }
 }
