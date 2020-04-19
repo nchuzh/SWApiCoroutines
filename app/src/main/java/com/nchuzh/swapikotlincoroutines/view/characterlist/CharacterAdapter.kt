@@ -14,7 +14,7 @@ class CharacterAdapter(private val onClick: (MovieCharacter) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_character, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, onClick)
     }
 
     fun addData(newData: List<MovieCharacter>) {
@@ -22,15 +22,13 @@ class CharacterAdapter(private val onClick: (MovieCharacter) -> Unit) :
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as ViewHolder).initViews(data[position])
     }
 
-    internal inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    internal class ViewHolder(itemView: View, private val onClick: (MovieCharacter) -> Unit) : RecyclerView.ViewHolder(itemView) {
         fun initViews(item: MovieCharacter) {
             itemView.txt_name.text = item.name
             itemView.setOnClickListener { onClick.invoke(item) }

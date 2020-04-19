@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkClient {
-    private const val baseUrl = "https://swapi.co/api/"
+    private const val baseUrl = "https://swapi.dev/api/"
     private val okHttpClient = OkHttpClient().newBuilder()
         .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
         .build()

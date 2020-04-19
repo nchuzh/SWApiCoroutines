@@ -40,9 +40,7 @@ class CharacterListActivity : AppCompatActivity(), CharacterListView {
     }
 
     override fun openDetails(details: CharacterDetails) {
-        val intent = Intent(this@CharacterListActivity, CharacterActivity::class.java)
-        intent.putExtra(CharacterActivity.KEY, details)
-        startActivity(intent)
+        startActivity(CharacterActivity.createIntent(this@CharacterListActivity, details))
     }
 
     override fun hideDetailsProgress() {
@@ -55,7 +53,7 @@ class CharacterListActivity : AppCompatActivity(), CharacterListView {
         if (::detailsProgress.isInitialized) {
             detailsProgress.show()
         } else {
-            detailsProgress = showProgressDialog(this)
+            detailsProgress = showProgressDialog()
         }
     }
 
@@ -65,18 +63,16 @@ class CharacterListActivity : AppCompatActivity(), CharacterListView {
         }
     }
 
-    override fun setList(list: List<MovieCharacter>?) {
-        list?.let {
-            (character_list.adapter as CharacterAdapter).addData(list)
-            (character_list.adapter as CharacterAdapter).notifyDataSetChanged()
-        }
+    override fun setList(list: List<MovieCharacter>) {
+        (character_list.adapter as CharacterAdapter).addData(list)
+        (character_list.adapter as CharacterAdapter).notifyDataSetChanged()
     }
 
     override fun showProgress() {
         if (::listProgress.isInitialized) {
             listProgress.show()
         } else {
-            listProgress = showProgressDialog(this)
+            listProgress = showProgressDialog()
         }
     }
 

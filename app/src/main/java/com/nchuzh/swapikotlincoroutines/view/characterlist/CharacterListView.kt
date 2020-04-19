@@ -5,7 +5,7 @@ import com.nchuzh.swapikotlincoroutines.domain.model.MovieCharacter
 
 interface CharacterListView {
     fun showProgress()
-    fun setList(list: List<MovieCharacter>?)
+    fun setList(list: List<MovieCharacter>)
     fun hideProgress()
     fun showDetailsProgress()
     fun hideDetailsProgress()
